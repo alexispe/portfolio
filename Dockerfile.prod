@@ -1,0 +1,63 @@
+ARG PHP_VERSION=8.1
+ARG NODE_VERSION=16
+
+#
+# nodejs
+#
+FROM node:${NODE_VERSION}-alpine AS nodejs
+
+WORKDIR /app
+
+COPY . .
+
+RUN yarn install; \
+    yarn run production
+
+#
+# web
+#
+FROM trafex/php-nginx:latest as web
+
+EXPOSE 8080
+USER root
+
+RUN apk add --no-cache \
+    php81-pdo_mysql \
+    php81-tokenizer \
+    php81-json \
+    php81-fileinfo \
+    php81-xmlwriter
+
+COPY docker/web/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
+USER nobody
+
+RUN mkdir /tmp/client_temp; \
+    chmod 777 /tmp/client_temp
+
+WORKDIR /var/www/html
+
+ENV APP_ENV=production
+ENV APP_DEBUG=false
+
+COPY --chown=nobody . .
+
+COPY docker/nginx/conf.d/default.conf /etc/nginx/conf.d/
+
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+RUN composer install \
+  --optimize-autoloader \
+  --no-interaction \
+  --no-progress \
+  --no-dev
+
+COPY --chown=nobody --from=nodejs /app/node_modules node_modules
+COPY --chown=nobody --from=nodejs /app/public public
+
+RUN php artisan config:cache; \
+    php artisan route:cache; \
+    php artisan view:cache
+
+ENTRYPOINT ["docker-entrypoint"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

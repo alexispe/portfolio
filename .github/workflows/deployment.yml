@@ -1,0 +1,54 @@
+on:
+  push:
+    branches:
+      - main
+
+name: Deployment
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build docker image
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/alexispe/portfolio/web:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    name: Deploy docker image
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Copy docker-compose.prod.yml to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          source: ./docker-compose.prod.yml
+          target: ./portfolio-2023/docker-compose.prod.yml
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            cd portfolio-2023
+            docker-compose -f docker-compose.prod.yml pull
+            docker-compose -f docker-compose.prod.yml up -d

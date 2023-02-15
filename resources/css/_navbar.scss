@@ -1,0 +1,60 @@
+.navbar.navbar-main {
+    min-height: 52px;
+    z-index: 999;
+
+    backdrop-filter: saturate(180%) blur(20px);
+    background-color: rgba(255,255,255,0.72);
+    border-bottom: 1px solid rgba(0,0,0,0.16);
+}
+
+.navbar.navbar-top {
+    min-height: 44px;
+    background: $dark;
+    .nav-link {
+        color: $light;
+        opacity: 0.85;
+        transition: opacity 0.2s ease-in-out;
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    &.navbar-light {
+        background: $light;
+        .nav-link {
+            color: $dark;
+        }
+    }
+}
+
+.navbar-aside {
+    position: sticky;
+    top: 86px;
+    z-index: 0;
+    border-left: 1px solid #e3e3e3;
+    padding: 0 12px 0 18px;
+    margin: 0 0 1em;
+
+    &-line {
+        position: absolute;
+        top: 0;
+        left: -1px;
+        width: 1px;
+        height: 25px;
+        background: black;
+        will-change: transform;
+        transition-property: transform;
+    }
+
+    li {
+        font-size: 14px;
+        font-weight: 600;
+        opacity: 0.5;
+        padding: 0.2em 0;
+
+        &:hover {
+            opacity: 1;
+            text-decoration: none;
+        }
+    }
+}

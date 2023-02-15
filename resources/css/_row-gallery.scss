@@ -1,0 +1,14 @@
+.row-gallery {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+
+    div {
+        display: block;
+        width: 379px;
+        height: 214px;
+        padding: 6px 9px;
+        border-radius: 10px;
+    }
+}
