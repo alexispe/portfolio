@@ -7,6 +7,8 @@ services:
       - "8088:8080"
     depends_on:
       - db
+    networks:
+      - debian_web
 
   db:
     image: 'mysql/mysql-server:8.0'
@@ -22,11 +24,9 @@ services:
       test: [ "CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}" ]
       retries: 3
       timeout: 5s
+    networks:
+      - debian_web
 
-  phpmyadmin:
-    image: phpmyadmin
-    environment:
-      PMA_HOST: mysql
-      UPLOAD_LIMIT: 300M
-    ports:
-      - "8080:80"
+networks:
+  debian_web:
+    external: true
