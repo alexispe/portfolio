@@ -16,8 +16,8 @@ set -e
 #    sleep 1
 #done
 
-sleep 5
-php artisan migrate --no-interaction --force
-php artisan storage:link
+#sleep 5
+#php artisan migrate --no-interaction --force
+#php artisan storage:link
 
 exec "$@"
