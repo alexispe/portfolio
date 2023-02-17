@@ -37,7 +37,7 @@ services:
       PMA_HOST: mysql
       UPLOAD_LIMIT: 300M
     ports:
-      - "8080:80"
+      - "8089:80"
     networks:
       - debian_web
 
