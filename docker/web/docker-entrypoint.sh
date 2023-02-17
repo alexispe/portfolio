@@ -16,8 +16,11 @@ set -e
 #    sleep 1
 #done
 
-#sleep 5
-#php artisan migrate --no-interaction --force
-#php artisan storage:link
+sleep 5
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan migrate --no-interaction --force
+php artisan storage:link
 
 exec "$@"

@@ -7,6 +7,8 @@ services:
       - "8088:8080"
     env_file:
       - .env.production
+    volumes:
+      - /home/debian/portfolio-2023/.env.production:/var/www/html/.env
     depends_on:
       - db
     networks:
